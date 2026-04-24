@@ -8,7 +8,7 @@ class CommunityMaster(models.Model):
     description = models.TextField(null=True, blank=True)
 
     class Meta:
-        db_table = 'application_community_master'
+        db_table = 'community_master'
 
     def save(self, *args, **kwargs):
         if self.community_name:
@@ -49,7 +49,7 @@ class ApplicationMaster(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        db_table = 'application_application_master'
+        db_table = 'application_master'
 
     def __str__(self):
         return f"{self.application_no} - {self.name}"
@@ -96,7 +96,7 @@ class ParentDetails(models.Model):
     guardian_contact = models.CharField(max_length=15, null=True, blank=True)
 
     class Meta:
-        db_table = 'application_parent_details'
+        db_table = 'application_parent'
 
 class CoursePreference(models.Model):
     course_pref_id = models.AutoField(primary_key=True)
@@ -109,7 +109,7 @@ class CoursePreference(models.Model):
     department = models.ForeignKey(Department, on_delete=models.SET_NULL, null=True, blank=True, db_column='dept_id')
 
     class Meta:
-        db_table = 'application_course_preference'
+        db_table = 'application_course'
 
 class AdditionalInfo(models.Model):
     info_id = models.AutoField(primary_key=True)
@@ -190,4 +190,4 @@ class ApplicationStatus(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        db_table = 'application_application_status'
+        db_table = 'application_status'
