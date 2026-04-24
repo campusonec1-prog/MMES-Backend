@@ -111,15 +111,18 @@ class ParentDetails(models.Model):
     father_name = models.CharField(max_length=100, null=True, blank=True)
     father_occupation = models.CharField(max_length=100, null=True, blank=True)
     father_qualification = models.CharField(max_length=100, null=True, blank=True)
-    father_income = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    father_phone = models.CharField(max_length=15, null=True, blank=True)
     
     mother_name = models.CharField(max_length=100, null=True, blank=True)
     mother_occupation = models.CharField(max_length=100, null=True, blank=True)
     mother_qualification = models.CharField(max_length=100, null=True, blank=True)
-    mother_income = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    mother_phone = models.CharField(max_length=15, null=True, blank=True)
+    
+    annual_income = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     
     guardian_name = models.CharField(max_length=100, null=True, blank=True)
     guardian_relationship = models.CharField(max_length=50, null=True, blank=True)
+    guardian_occupation = models.CharField(max_length=100, null=True, blank=True)
     guardian_contact = models.CharField(max_length=15, null=True, blank=True)
 
     class Meta:
