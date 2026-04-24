@@ -1,4 +1,6 @@
 from django.db import models
+from datetime import datetime
+
 from location.models import Country, State, District, Taluk
 from department.models import Department
 
@@ -25,7 +27,7 @@ class ApplicationMaster(models.Model):
     ]
     
     app_id = models.AutoField(primary_key=True)
-    application_no = models.CharField(max_length=20, unique=True)
+    application_no = models.CharField(max_length=20, unique=True, null=True, blank=True)
     application_type = models.CharField(max_length=2, choices=APPLICATION_TYPE_CHOICES)
     
     name = models.CharField(max_length=100, null=True, blank=True)
@@ -46,12 +48,37 @@ class ApplicationMaster(models.Model):
     student_mobile = models.CharField(max_length=15, null=True, blank=True)
     parent_mobile = models.CharField(max_length=15, null=True, blank=True)
     
+    applicant_user = models.ForeignKey('ApplicantUser', on_delete=models.CASCADE, null=True, blank=True, db_column='applicant_user_id', related_name='applications')
+    
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         db_table = 'application_master'
 
+    def save(self, *args, **kwargs):
+        if not self.application_no:
+            prefix = self.application_type  # 'UG' or 'PG'
+            year = str(datetime.now().year)[2:] # '26'
+            
+            # Find last number for this prefix and year
+            last_app = ApplicationMaster.objects.filter(
+                application_no__startswith=f"{prefix}{year}"
+            ).order_by('-application_no').first()
+            
+            if last_app:
+                try:
+                    last_no = int(last_app.application_no[4:])
+                    new_no = str(last_no + 1).zfill(3)
+                except (ValueError, IndexError):
+                    new_no = '001'
+            else:
+                new_no = '001'
+            
+            self.application_no = f"{prefix}{year}{new_no}"
+        super(ApplicationMaster, self).save(*args, **kwargs)
+
     def __str__(self):
+
         return f"{self.application_no} - {self.name}"
 
 class Address(models.Model):
@@ -191,3 +218,25 @@ class ApplicationStatus(models.Model):
 
     class Meta:
         db_table = 'application_status'
+
+import bcrypt
+
+class ApplicantUser(models.Model):
+    user_id = models.AutoField(primary_key=True)
+    full_name = models.CharField(max_length=150)
+    email = models.EmailField(max_length=150, unique=True)
+    phone = models.CharField(max_length=20, null=True, blank=True)
+    password = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'application_users'
+
+    def set_password(self, raw_password):
+        self.password = bcrypt.hashpw(raw_password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+
+    def check_password(self, raw_password):
+        return bcrypt.checkpw(raw_password.encode('utf-8'), self.password.encode('utf-8'))
+
+    def __str__(self):
+        return self.email

@@ -3,7 +3,8 @@ from .views import (
     ApplicationMasterViewSet, AddressViewSet, ParentDetailsViewSet,
     CoursePreferenceViewSet, AdditionalInfoViewSet, UGMarksViewSet,
     PGAcademicRecordViewSet, StatusMasterViewSet, ApplicationStatusViewSet,
-    CommunityMasterViewSet
+    CommunityMasterViewSet, ApplicantSignupView, ApplicantLoginView, ApplicantProfileView,
+    ApplicantUserViewSet
 )
 
 urlpatterns = [
@@ -11,6 +12,7 @@ urlpatterns = [
     path('application/list-all', ApplicationMasterViewSet.as_view({'get': 'list'}), name='application-list-all'),
     path('application/create', ApplicationMasterViewSet.as_view({'post': 'create'}), name='application-create'),
     path('application/list-by-id/<int:pk>', ApplicationMasterViewSet.as_view({'get': 'retrieve'}), name='application-list-by-id'),
+    path('application/get/<int:pk>', ApplicationMasterViewSet.as_view({'get': 'retrieve'}), name='application-get'),
     path('application/edit/<int:pk>', ApplicationMasterViewSet.as_view({'put': 'update', 'patch': 'partial_update'}), name='application-edit'),
     path('application/delete/<int:pk>', ApplicationMasterViewSet.as_view({'delete': 'destroy'}), name='application-delete'),
 
@@ -76,5 +78,17 @@ urlpatterns = [
     path('community-master/list-by-id/<int:pk>', CommunityMasterViewSet.as_view({'get': 'retrieve'}), name='community-master-list-by-id'),
     path('community-master/edit/<int:pk>', CommunityMasterViewSet.as_view({'put': 'update', 'patch': 'partial_update'}), name='community-master-edit'),
     path('community-master/delete/<int:pk>', CommunityMasterViewSet.as_view({'delete': 'destroy'}), name='community-master-delete'),
+
+    # Applicant User Admin URLs
+    path('applicant-users/list-all', ApplicantUserViewSet.as_view({'get': 'list'}), name='applicant-user-list-all'),
+    path('applicant-users/create', ApplicantUserViewSet.as_view({'post': 'create'}), name='applicant-user-create'),
+    path('applicant-users/list-by-id/<int:pk>', ApplicantUserViewSet.as_view({'get': 'retrieve'}), name='applicant-user-list-by-id'),
+    path('applicant-users/edit/<int:pk>', ApplicantUserViewSet.as_view({'put': 'update', 'patch': 'partial_update'}), name='applicant-user-edit'),
+    path('applicant-users/delete/<int:pk>', ApplicantUserViewSet.as_view({'delete': 'destroy'}), name='applicant-user-delete'),
+
+    # Applicant Auth URLs
+    path('auth/signup', ApplicantSignupView.as_view(), name='applicant-signup'),
+    path('auth/login', ApplicantLoginView.as_view(), name='applicant-login'),
+    path('auth/profile/', ApplicantProfileView.as_view(), name='applicant-profile'),
 ]
 

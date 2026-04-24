@@ -2,7 +2,7 @@ from rest_framework import serializers
 from .models import (
     ApplicationMaster, Address, ParentDetails, 
     CoursePreference, AdditionalInfo, UGMarks, PGAcademicRecord,
-    StatusMaster, ApplicationStatus, CommunityMaster
+    StatusMaster, ApplicationStatus, CommunityMaster, ApplicantUser
 )
 
 class CommunityMasterSerializer(serializers.ModelSerializer):
@@ -94,3 +94,9 @@ class ApplicationStatusSerializer(serializers.ModelSerializer):
     class Meta:
         model = ApplicationStatus
         fields = '__all__'
+
+class ApplicantUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ApplicantUser
+        fields = ['user_id', 'full_name', 'email', 'phone', 'password', 'created_at']
+        extra_kwargs = {'password': {'write_only': True, 'required': False}}
