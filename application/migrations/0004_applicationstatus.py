@@ -11,6 +11,7 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        migrations.RunSQL("SET SESSION sql_require_primary_key = 0;"),
         migrations.CreateModel(
             name='ApplicationStatus',
             fields=[
@@ -25,4 +26,5 @@ class Migration(migrations.Migration):
                 'db_table': 'application_application_status',
             },
         ),
+        migrations.RunSQL("SET SESSION sql_require_primary_key = 1;"),
     ]

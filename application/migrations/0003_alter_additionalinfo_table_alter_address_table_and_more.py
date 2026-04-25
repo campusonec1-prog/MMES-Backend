@@ -10,6 +10,7 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        migrations.RunSQL("SET SESSION sql_require_primary_key = 0;"),
         migrations.AlterModelTable(
             name='additionalinfo',
             table='application_additional_info',
@@ -38,4 +39,5 @@ class Migration(migrations.Migration):
             name='ugmarks',
             table='application_ug_marks',
         ),
+        migrations.RunSQL("SET SESSION sql_require_primary_key = 1;"),
     ]
