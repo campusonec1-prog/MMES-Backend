@@ -11,6 +11,7 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        migrations.RunSQL("SET SESSION sql_require_primary_key = 0;"),
         migrations.CreateModel(
             name='StatusMaster',
             fields=[
@@ -36,4 +37,5 @@ class Migration(migrations.Migration):
             name='status',
             field=models.ForeignKey(db_column='status_id', on_delete=django.db.models.deletion.CASCADE, to='application.statusmaster'),
         ),
+        migrations.RunSQL("SET SESSION sql_require_primary_key = 1;"),
     ]
