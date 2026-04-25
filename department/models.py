@@ -8,7 +8,7 @@ class Department(models.Model):
     description = models.TextField(blank=True, null=True)
 
     class Meta:
-        db_table = 'department_department'
+        db_table = 'Department_department'
 
     def __str__(self):
         return self.dept_name
