@@ -25,7 +25,7 @@ class ApplicationMasterSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def get_current_status(self, obj):
-        last_status = ApplicationStatus.objects.filter(application=obj).order_by('-updated_at').first()
+        last_status = ApplicationStatus.objects.filter(application=obj).order_by('-app_status_id').first()
         if last_status and last_status.status:
             return last_status.status.status_name
         return "PENDING"
@@ -55,6 +55,11 @@ class ApplicationMasterSerializer(serializers.ModelSerializer):
         return AdditionalInfoSerializer(info).data if info else None
 
 class AddressSerializer(serializers.ModelSerializer):
+    taluk_name = serializers.CharField(source='taluk.taluk_name', read_only=True)
+    district_name = serializers.CharField(source='district.district_name', read_only=True)
+    state_name = serializers.CharField(source='state.state_name', read_only=True)
+    country_name = serializers.CharField(source='country.country_name', read_only=True)
+
     class Meta:
         model = Address
         fields = '__all__'
