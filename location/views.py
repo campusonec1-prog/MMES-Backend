@@ -7,7 +7,7 @@ from rest_framework.response import Response
 class TenResultsSetPagination(PageNumberPagination):
     page_size = 10
     page_size_query_param = 'page_size'
-    max_page_size = 100
+    max_page_size = 1000
 
     def get_paginated_response(self, data):
         return Response({
@@ -27,9 +27,15 @@ class CountryViewSet(viewsets.ModelViewSet):
     pagination_class = None
 
 class StateViewSet(viewsets.ModelViewSet):
-    queryset = State.objects.all().select_related('country').order_by('state_name')
     serializer_class = StateSerializer
     pagination_class = None
+
+    def get_queryset(self):
+        queryset = State.objects.all().select_related('country').order_by('state_name')
+        country_id = self.request.query_params.get('country')
+        if country_id:
+            queryset = queryset.filter(country_id=country_id)
+        return queryset
 
 class DistrictViewSet(viewsets.ModelViewSet):
     queryset = District.objects.all()
