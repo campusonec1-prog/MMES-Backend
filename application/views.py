@@ -85,8 +85,11 @@ class ApplicantSignupView(APIView):
         phone = request.data.get('phone')
         password = request.data.get('password')
 
-        if not full_name or not email or not password:
+        if not full_name or not email or not password or not phone:
             return Response({'error': 'All required fields must be provided'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if not str(phone).isdigit() or len(str(phone)) != 10:
+            return Response({'error': 'Phone number must be exactly 10 digits'}, status=status.HTTP_400_BAD_REQUEST)
 
         if ApplicantUser.objects.filter(email=email).exists():
             return Response({'error': 'User with this email already exists'}, status=status.HTTP_400_BAD_REQUEST)
