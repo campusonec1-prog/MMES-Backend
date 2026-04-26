@@ -4,6 +4,7 @@ from .models import (
     CoursePreference, AdditionalInfo, UGMarks, PGAcademicRecord,
     StatusMaster, ApplicationStatus, CommunityMaster, ApplicantUser
 )
+from location.models import Country, State, District, Taluk
 
 class CommunityMasterSerializer(serializers.ModelSerializer):
     class Meta:
@@ -12,7 +13,7 @@ class CommunityMasterSerializer(serializers.ModelSerializer):
 
 class ApplicationMasterSerializer(serializers.ModelSerializer):
     community_name = serializers.CharField(source='community.community_name', read_only=True)
-    current_status = serializers.SerializerMethodField()
+    current_status = serializers.CharField(required=False)
     course_preferences = serializers.SerializerMethodField()
     pg_academic_records = serializers.SerializerMethodField()
     address_details = serializers.SerializerMethodField()
@@ -29,6 +30,31 @@ class ApplicationMasterSerializer(serializers.ModelSerializer):
         if last_status and last_status.status:
             return last_status.status.status_name
         return "PENDING"
+
+    def to_representation(self, instance):
+        ret = super().to_representation(instance)
+        ret['current_status'] = self.get_current_status(instance)
+        return ret
+
+    def update(self, instance, validated_data):
+        status_name = validated_data.pop('current_status', None)
+        
+        # Update Master fields
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+
+        # Handle Status Update
+        if status_name:
+            from .models import StatusMaster, ApplicationStatus
+            status_obj, _ = StatusMaster.objects.get_or_create(status_name=status_name.upper())
+            ApplicationStatus.objects.create(
+                application=instance,
+                status=status_obj,
+                remarks=f"Status updated to {status_name}"
+            )
+        
+        return instance
 
     def get_course_preferences(self, obj):
         return CoursePreferenceSerializer(obj.course_preferences.all().order_by('preference_order'), many=True).data
@@ -51,14 +77,24 @@ class ApplicationMasterSerializer(serializers.ModelSerializer):
         return AdditionalInfoSerializer(info).data if info else None
 
 class AddressSerializer(serializers.ModelSerializer):
-    taluk_name = serializers.CharField(source='taluk.taluk_name', read_only=True)
-    district_name = serializers.CharField(source='district.district_name', read_only=True)
-    state_name = serializers.CharField(source='state.state_name', read_only=True)
+    country = serializers.PrimaryKeyRelatedField(queryset=Country.objects.all(), required=False, allow_null=True)
+    state = serializers.PrimaryKeyRelatedField(queryset=State.objects.all(), required=False, allow_null=True)
+    district = serializers.PrimaryKeyRelatedField(queryset=District.objects.all(), required=False, allow_null=True)
+    taluk = serializers.PrimaryKeyRelatedField(queryset=Taluk.objects.all(), required=False, allow_null=True)
+    
     country_name = serializers.CharField(source='country.country_name', read_only=True)
+    state_name = serializers.CharField(source='state.state_name', read_only=True)
+    district_name = serializers.CharField(source='district.district_name', read_only=True)
+    taluk_name = serializers.CharField(source='taluk.taluk_name', read_only=True)
 
     class Meta:
         model = Address
-        fields = '__all__'
+        fields = [
+            'address_id', 'application', 'address_type', 'address',
+            'country', 'state', 'district', 'taluk', 'pincode',
+            'country_name', 'state_name', 'district_name', 'taluk_name',
+            'other_district', 'other_taluk'
+        ]
 
 class ParentDetailsSerializer(serializers.ModelSerializer):
     class Meta:

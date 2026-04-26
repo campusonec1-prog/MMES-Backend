@@ -100,6 +100,8 @@ class Address(models.Model):
     country = models.ForeignKey(Country, on_delete=models.SET_NULL, null=True, blank=True, db_column='country_id')
     
     pincode = models.CharField(max_length=10, null=True, blank=True)
+    other_district = models.CharField(max_length=100, null=True, blank=True)
+    other_taluk = models.CharField(max_length=100, null=True, blank=True)
 
     class Meta:
         db_table = 'application_address'

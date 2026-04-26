@@ -42,6 +42,11 @@ class DistrictViewSet(viewsets.ModelViewSet):
     serializer_class = DistrictSerializer
     pagination_class = TenResultsSetPagination
 
+    def paginate_queryset(self, queryset):
+        if 'list-all' in self.request.path or self.request.query_params.get('all') == 'true':
+            return None
+        return super().paginate_queryset(queryset)
+
     def get_queryset(self):
         queryset = District.objects.all().select_related('state', 'state__country').order_by('district_name')
         
@@ -62,6 +67,11 @@ class DistrictViewSet(viewsets.ModelViewSet):
 class TalukViewSet(viewsets.ModelViewSet):
     serializer_class = TalukSerializer
     pagination_class = TenResultsSetPagination
+
+    def paginate_queryset(self, queryset):
+        if 'list-all' in self.request.path or self.request.query_params.get('all') == 'true':
+            return None
+        return super().paginate_queryset(queryset)
 
     def get_queryset(self):
         queryset = Taluk.objects.all().select_related('district', 'district__state').order_by('taluk_name')
