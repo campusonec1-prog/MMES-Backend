@@ -10,6 +10,7 @@ from .serializers import RoleSerializer, StaffSerializer
 class RoleViewSet(viewsets.ModelViewSet):
     queryset = Role.objects.all()
     serializer_class = RoleSerializer
+    pagination_class = None
 
 class StaffViewSet(viewsets.ModelViewSet):
     queryset = Staff.objects.all()

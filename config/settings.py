@@ -131,5 +131,11 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 CORS_ALLOW_ALL_ORIGINS = True # For development
 
+
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'application.pagination.StandardResultsSetPagination',
+    'PAGE_SIZE': 50,
+}
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 

@@ -19,15 +19,23 @@ from .serializers import (
 class CommunityMasterViewSet(viewsets.ModelViewSet):
     queryset = CommunityMaster.objects.all()
     serializer_class = CommunityMasterSerializer
+    pagination_class = None
 
 class ApplicationMasterViewSet(viewsets.ModelViewSet):
     serializer_class = ApplicationMasterSerializer
 
     def get_queryset(self):
-        queryset = ApplicationMaster.objects.all().order_by('-created_at')
+        queryset = ApplicationMaster.objects.all().select_related('community').prefetch_related(
+            'course_preferences', 'pg_records', 'addresses', 'parent_details', 
+            'ug_marks', 'additional_info', 'status_history', 'status_history__status'
+        ).order_by('-created_at')
+        
         user_id = self.request.query_params.get('applicant_user_id')
-        if user_id:
-            queryset = queryset.filter(applicant_user_id=user_id)
+        if user_id and user_id != 'undefined' and user_id != 'null':
+            try:
+                queryset = queryset.filter(applicant_user_id=int(user_id))
+            except (ValueError, TypeError):
+                pass
         return queryset
 
 class AddressViewSet(viewsets.ModelViewSet):
@@ -57,6 +65,7 @@ class PGAcademicRecordViewSet(viewsets.ModelViewSet):
 class StatusMasterViewSet(viewsets.ModelViewSet):
     queryset = StatusMaster.objects.all()
     serializer_class = StatusMasterSerializer
+    pagination_class = None
 
 class ApplicationStatusViewSet(viewsets.ModelViewSet):
     queryset = ApplicationStatus.objects.all()

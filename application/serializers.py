@@ -25,33 +25,29 @@ class ApplicationMasterSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def get_current_status(self, obj):
-        last_status = ApplicationStatus.objects.filter(application=obj).order_by('-app_status_id').first()
+        last_status = obj.status_history.order_by('-app_status_id').first()
         if last_status and last_status.status:
             return last_status.status.status_name
         return "PENDING"
 
     def get_course_preferences(self, obj):
-        prefs = CoursePreference.objects.filter(application=obj).order_by('preference_order')
-        return CoursePreferenceSerializer(prefs, many=True).data
+        return CoursePreferenceSerializer(obj.course_preferences.all().order_by('preference_order'), many=True).data
 
     def get_pg_academic_records(self, obj):
-        records = PGAcademicRecord.objects.filter(application=obj)
-        return PGAcademicRecordSerializer(records, many=True).data
+        return PGAcademicRecordSerializer(obj.pg_records.all(), many=True).data
 
     def get_address_details(self, obj):
-        addresses = Address.objects.filter(application=obj)
-        return AddressSerializer(addresses, many=True).data
+        return AddressSerializer(obj.addresses.all(), many=True).data
 
     def get_parent_details(self, obj):
-        parent = ParentDetails.objects.filter(application=obj).first()
+        parent = obj.parent_details.first()
         return ParentDetailsSerializer(parent).data if parent else None
 
     def get_ug_marks(self, obj):
-        marks = UGMarks.objects.filter(application=obj)
-        return UGMarksSerializer(marks, many=True).data
+        return UGMarksSerializer(obj.ug_marks.all(), many=True).data
 
     def get_additional_info(self, obj):
-        info = AdditionalInfo.objects.filter(application=obj).first()
+        info = obj.additional_info.first()
         return AdditionalInfoSerializer(info).data if info else None
 
 class AddressSerializer(serializers.ModelSerializer):

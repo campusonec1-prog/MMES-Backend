@@ -5,3 +5,4 @@ from .serializers import DepartmentSerializer
 class DepartmentViewSet(viewsets.ModelViewSet):
     queryset = Department.objects.all()
     serializer_class = DepartmentSerializer
+    pagination_class = None
