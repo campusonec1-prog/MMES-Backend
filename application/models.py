@@ -50,6 +50,10 @@ class ApplicationMaster(models.Model):
     
     applicant_user = models.ForeignKey('ApplicantUser', on_delete=models.CASCADE, null=True, blank=True, db_column='applicant_user_id', related_name='applications')
     
+    hsc_month_year_of_passing = models.CharField(max_length=20, null=True, blank=True)
+    hsc_registration_no = models.CharField(max_length=50, null=True, blank=True)
+    hsc_board = models.CharField(max_length=100, null=True, blank=True)
+    
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -173,6 +177,7 @@ class UGMarks(models.Model):
     max_marks = models.IntegerField(null=True, blank=True)
     
     part = models.CharField(max_length=10, choices=PART_CHOICES)
+    attempts = models.IntegerField(default=1)
 
     class Meta:
         db_table = 'application_ug_marks'
